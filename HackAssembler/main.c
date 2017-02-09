@@ -7,9 +7,15 @@
 //
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 int main(int argc, const char * argv[]) {
-    FILE *inputFile = fopen("/Users/FireCrotch/Documents/Programming/Learning/nand2tetris/projects/06/add/Add.asm", "r");
+    char filename[200];
+    printf("Enter filename> ");
+    scanf("%s", filename);
+    
+    FILE *inputFile = fopen(filename, "r");
     
     if (inputFile == NULL) {
         fprintf(stderr, "Cant open input file\n");
@@ -23,11 +29,33 @@ int main(int argc, const char * argv[]) {
         return 1;
     }
     
-    int c;
+    char line[256];
     
-    while ((c = fgetc(inputFile)) != EOF) {
-        printf("%c", c);
+    while (fgets(line, sizeof(line), inputFile)) {
+        if (line[0] == '/' && line[1] == '/') {
+            continue;
+        }
+        
+        if (line[0] == '@') {
+            int value = atoi(strtok(line, "@"));
+            fprintf(outputFile, "0");
+            
+            int i, bit;
+            for (i = 15; i >= 0; i--) {
+                bit = value >> i;
+                
+                if (bit & 1) {
+                    fprintf(outputFile, "1");
+                } else {
+                    fprintf(outputFile, "0");
+                }
+            }
+            
+            fprintf(outputFile, "\n");
+        }
     }
+    
+    fclose(outputFile);
     
     return 0;
 }
