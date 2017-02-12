@@ -32,10 +32,6 @@ int main(int argc, const char * argv[]) {
     
     char line[256];
     while (fgets(line, sizeof(line), inputFile)) {
-//        for (int i = 0; i < 256; i++) {
-//            printf("%c ", line[i]);
-//        }
-    
         if ((line[0] == '/' && line[1] == '/') || isspace(line[0])) {
             continue;
         }
@@ -59,9 +55,9 @@ int main(int argc, const char * argv[]) {
             continue;
         }
         
-        char *destination;
-        char *component;
-        char *jump;
+        char *destination = NULL;
+        char *component = NULL;
+        char *jump = NULL;
         
         if (strchr(line, '=')) {
             destination = strtok(line, "=");
@@ -82,6 +78,8 @@ int main(int argc, const char * argv[]) {
             destination = "110";
         } else if (strncmp(destination, "AM", 2) == 0) {
             destination = "101";
+        } else if (strncmp(destination, "MD", 2) == 0) {
+            destination = "011";
         } else if (strncmp(destination, "M", 1) == 0) {
             destination = "001";
         } else if (strncmp(destination, "D", 1) == 0) {
