@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 int main(int argc, const char * argv[]) {
     char filename[200];
@@ -31,7 +32,11 @@ int main(int argc, const char * argv[]) {
     
     char line[256];
     while (fgets(line, sizeof(line), inputFile)) {
-        if (line[0] == '/' && line[1] == '/') {
+//        for (int i = 0; i < 256; i++) {
+//            printf("%c ", line[i]);
+//        }
+    
+        if ((line[0] == '/' && line[1] == '/') || isspace(line[0])) {
             continue;
         }
         
@@ -71,96 +76,96 @@ int main(int argc, const char * argv[]) {
         
         if (destination == NULL) {
             destination = "000";
-        } else if (strcmp(destination, "M")) {
-            destination = "001";
-        } else if (strcmp(destination, "D")) {
-            destination = "010";
-        } else if (strcmp(destination, "A")) {
-            destination = "100";
-        } else if (strcmp(destination, "AM")) {
-            destination = "101";
-        } else if (strcmp(destination, "AD")) {
-            destination = "110";
-        } else if (strcmp(destination, "AMD")) {
+        } else if (strncmp(destination, "AMD", 3) == 0) {
             destination = "111";
+        } else if (strncmp(destination, "AD", 2) == 0) {
+            destination = "110";
+        } else if (strncmp(destination, "AM", 2) == 0) {
+            destination = "101";
+        } else if (strncmp(destination, "M", 1) == 0) {
+            destination = "001";
+        } else if (strncmp(destination, "D", 1) == 0) {
+            destination = "010";
+        } else if (strncmp(destination, "A", 1) == 0) {
+            destination = "100";
         }
         
         if (component == NULL) {
             printf("'component' should not be NULL!");
             return 1;
-        } else if (strcmp(component, "0")) {
+        } else if (strncmp(component, "0", 1) == 0) {
             component = "0101010";
-        } else if (strcmp(component, "1")) {
+        } else if (strncmp(component, "1", 1) == 0) {
             component = "0111111";
-        } else if (strcmp(component, "-1")) {
+        } else if (strncmp(component, "-1", 2) == 0) {
             component = "0111010";
-        } else if (strcmp(component, "D")) {
-            component = "0001100";
-        } else if (strcmp(component, "A")) {
-            component = "0110000";
-        } else if (strcmp(component, "!D")) {
+        } else if (strncmp(component, "!D", 2) == 0) {
             component = "0001101";
-        } else if (strcmp(component, "!A")) {
+        } else if (strncmp(component, "!A", 2) == 0) {
             component = "0110001";
-        } else if (strcmp(component, "-D")) {
+        } else if (strncmp(component, "-D", 2) == 0) {
             component = "0001101";
-        } else if (strcmp(component, "-A")) {
+        } else if (strncmp(component, "-A", 2) == 0) {
             component = "0001101";
-        } else if (strcmp(component, "D+1") || strcmp(component, "1+D")) {
+        } else if (strncmp(component, "D+1", 3) == 0 || strncmp(component, "1+D", 3) == 0) {
             component = "0011111";
-        } else if (strcmp(component, "A+1") || strcmp(component, "1+A")) {
+        } else if (strncmp(component, "A+1", 3) == 0 || strncmp(component, "1+A", 3) == 0) {
             component = "0110111";
-        } else if (strcmp(component, "D-1")) {
+        } else if (strncmp(component, "D-1", 3) == 0) {
             component = "0001110";
-        } else if (strcmp(component, "A-1")) {
+        } else if (strncmp(component, "A-1", 3) == 0) {
             component = "0110010";
-        } else if (strcmp(component, "D+A") || strcmp(component, "A+D")) {
+        } else if (strncmp(component, "D+A", 3) == 0 || strncmp(component, "A+D", 3) == 0) {
             component = "0000010";
-        } else if (strcmp(component, "D-A")) {
+        } else if (strncmp(component, "D-A", 3) == 0) {
             component = "0010011";
-        } else if (strcmp(component, "A-D")) {
+        } else if (strncmp(component, "A-D", 3) == 0) {
             component = "0000111";
-        } else if (strcmp(component, "D&A") || strcmp(component, "A&D")) {
+        } else if (strncmp(component, "D&A", 3) == 0 || strncmp(component, "A&D", 3) == 0) {
             component = "0000000";
-        } else if (strcmp(component, "D|A") || strcmp(component, "A|D")) {
+        } else if (strncmp(component, "D|A", 3) == 0 || strncmp(component, "A|D", 3) == 0) {
             component = "0010101";
-        } else if (strcmp(component, "M")) {
-            component = "1110000";
-        } else if (strcmp(component, "!M")) {
+        } else if (strncmp(component, "!M", 2) == 0) {
             component = "1110001";
-        } else if (strcmp(component, "-M")) {
+        } else if (strncmp(component, "-M", 2) == 0) {
             component = "1110011";
-        } else if (strcmp(component, "M+1") || strcmp(component, "1+M")) {
+        } else if (strncmp(component, "M+1", 3) == 0 || strncmp(component, "1+M", 3) == 0) {
             component = "1110111";
-        } else if (strcmp(component, "M-1")) {
+        } else if (strncmp(component, "M-1", 3) == 0) {
             component = "1110010";
-        } else if (strcmp(component, "D+M") || strcmp(component, "M+D")) {
+        } else if (strncmp(component, "D+M", 3) == 0 || strncmp(component, "M+D", 3) == 0) {
             component = "1000010";
-        } else if (strcmp(component, "D-M")) {
+        } else if (strncmp(component, "D-M", 3) == 0) {
             component = "1010011";
-        } else if (strcmp(component, "M-D")) {
+        } else if (strncmp(component, "M-D", 3) == 0) {
             component = "1000111";
-        } else if (strcmp(component, "D&M") || strcmp(component, "M&D")) {
+        } else if (strncmp(component, "D&M", 3) == 0 || strncmp(component, "M&D", 3) == 0) {
             component = "1000000";
-        } else if (strcmp(component, "D|M") || strcmp(component, "M|D")) {
+        } else if (strncmp(component, "D|M", 3) == 0 || strncmp(component, "M|D", 3) == 0) {
             component = "1010101";
+        } else if (strncmp(component, "D", 1) == 0) {
+            component = "0001100";
+        } else if (strncmp(component, "A", 1) == 0) {
+            component = "0110000";
+        } else if (strncmp(component, "M", 1) == 0) {
+            component = "1110000";
         }
         
         if (jump == NULL) {
             jump = "000";
-        } else if (strcmp(jump, "JGT")) {
+        } else if (strncmp(jump, "JGT", 3) == 0) {
             jump = "001";
-        } else if (strcmp(jump, "JEQ")) {
+        } else if (strncmp(jump, "JEQ", 3) == 0) {
             jump = "010";
-        } else if (strcmp(jump, "JGE")) {
+        } else if (strncmp(jump, "JGE", 3) == 0) {
             jump = "011";
-        } else if (strcmp(jump, "JLT")) {
+        } else if (strncmp(jump, "JLT", 3) == 0) {
             jump = "100";
-        } else if (strcmp(jump, "JNE")) {
+        } else if (strncmp(jump, "JNE", 3) == 0) {
             jump = "101";
-        } else if (strcmp(jump, "JLE")) {
+        } else if (strncmp(jump, "JLE", 3) == 0) {
             jump = "110";
-        } else if (strcmp(jump, "JMP")) {
+        } else if (strncmp(jump, "JMP", 3) == 0) {
             jump = "111";
         }
         
