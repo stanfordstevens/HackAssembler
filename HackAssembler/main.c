@@ -78,7 +78,7 @@ void addSymbol(char *key, int address) {
     symbolAddresses = realloc(symbolAddresses, numberOfSymbols * sizeof(int));
     
     size_t newIndex = numberOfSymbols - 1;
-    symbolKeys[newIndex] = malloc(15 * sizeof(char));
+    symbolKeys[newIndex] = malloc(240 * sizeof(char));
     strcpy(symbolKeys[newIndex], key);
     symbolAddresses[newIndex] = address;
 }
@@ -117,7 +117,7 @@ int main(int argc, const char * argv[]) {
     int initialSymbolAmount = 23;
     symbolKeys = malloc(initialSymbolAmount*sizeof(char *));
     for (int i = 0; i < initialSymbolAmount; i++) {
-        symbolKeys[i] = malloc(15 * sizeof(char)); //TODO: dont know how big each string is
+        symbolKeys[i] = malloc(240 * sizeof(char)); //TODO: dont know how big each string is
     }
     
     symbolAddresses = malloc(initialSymbolAmount*sizeof(int));
