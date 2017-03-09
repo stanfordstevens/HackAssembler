@@ -11,12 +11,146 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-int main(int argc, const char * argv[]) {
-    char filename[200];
-    printf("Enter filename> ");
-    scanf("%s", filename);
+size_t numberOfSymbols = 0;
+char **symbolKeys;
+int *symbolAddresses;
+
+typedef struct node {
+    char *key;
+    int value;
+    struct node *next;
+} node;
+
+int hash(char *key) {
+    return toupper(key[0]) - 'A';
+}
+
+
+//void addSymbol(node *symbols[26], char *key, int value) {
+//    int hashedKey = hash(key);
+//    
+//    node *newPointer = malloc(sizeof(node));
+//    if (newPointer == NULL) {
+//        return;
+//    }
+//    
+//    strcpy(newPointer->key, key);
+//    newPointer->value = value;
+//    newPointer->next = NULL;
+//    
+//    if (symbols[hashedKey] == NULL) {
+//        symbols[hashedKey] = newPointer;
+//    } else {
+//        node *previousPointer = symbols[hashedKey];
+//        while (1) {
+//            if (previousPointer->next == NULL) {
+//                previousPointer->next = newPointer;
+//                break;
+//            }
+//            
+//            previousPointer = previousPointer->next;
+//        }
+//    }
+//}
+//
+//void getAddressFromSymbols(node *symbols[26], char *key, int *address) {
+//    int hashedKey = hash(key);
+//    
+//    if (symbols[hashedKey] == NULL) {
+//        return;
+//    } else {
+//        while (1) {
+//            node *previousPointer = symbols[hashedKey];
+//            if (strcmp(previousPointer->key, key) == 0) {
+//                *address = previousPointer->value;
+//                break;
+//            } else if (previousPointer->next == NULL) {
+//                break;
+//            }
+//        }
+//    }
+//}
+
+void addSymbol(char *key, int address) {
+    numberOfSymbols++;
     
-    FILE *inputFile = fopen(filename, "r");
+    symbolKeys = realloc(symbolKeys, numberOfSymbols * sizeof(char *));
+    symbolAddresses = realloc(symbolAddresses, numberOfSymbols * sizeof(int));
+    
+    size_t newIndex = numberOfSymbols - 1;
+    symbolKeys[newIndex] = malloc(15 * sizeof(char));
+    strcpy(symbolKeys[newIndex], key);
+    symbolAddresses[newIndex] = address;
+}
+
+void addressForSymbolKey(char *key, int *address) {
+    for (int i = 0; i < numberOfSymbols; i++) {
+        if (strcmp(symbolKeys[i], key) == 0) {
+            *address = symbolAddresses[i];
+            return;
+        }
+    }
+    
+    return;
+}
+
+int shouldIgnoreLine(char *line) {
+    if ((line[0] == '/' && line[1] == '/') || isspace(line[0]) || strcmp(line, "") == 0 || strcmp(line, "\r\n") == 0) { //TODO: this is awful
+        return 1;
+    }
+    
+    return 0;
+}
+
+char* trimLeadingWhitespaceFromString(char *string) {
+    while(isspace((unsigned char)*string)) {
+        string++;
+    }
+    
+    return string;
+}
+
+int main(int argc, const char * argv[]) {
+//    node *symbols[26] = {NULL};
+    
+    int variableAddress = 16;
+    int initialSymbolAmount = 23;
+    symbolKeys = malloc(initialSymbolAmount*sizeof(char *));
+    for (int i = 0; i < initialSymbolAmount; i++) {
+        symbolKeys[i] = malloc(15 * sizeof(char)); //TODO: dont know how big each string is
+    }
+    
+    symbolAddresses = malloc(initialSymbolAmount*sizeof(int));
+    
+    addSymbol("SP", 0);
+    addSymbol("LCL", 1);
+    addSymbol("ARG", 2);
+    addSymbol("THIS", 3);
+    addSymbol("THAT", 4);
+    addSymbol("R0", 0);
+    addSymbol("R1", 1);
+    addSymbol("R2", 2);
+    addSymbol("R3", 3);
+    addSymbol("R4", 4);
+    addSymbol("R5", 5);
+    addSymbol("R6", 6);
+    addSymbol("R7", 7);
+    addSymbol("R8", 8);
+    addSymbol("R9", 9);
+    addSymbol("R10", 10);
+    addSymbol("R11", 11);
+    addSymbol("R12", 12);
+    addSymbol("R13", 13);
+    addSymbol("R14", 14);
+    addSymbol("R15", 15);
+    addSymbol("SCREEN", 16384);
+    addSymbol("KBD", 24576);
+    
+    char filepath[200];
+    printf("Enter filepath> ");
+    scanf("%s", filepath);
+    
+    FILE *inputFile = fopen(filepath, "r");
     
     if (inputFile == NULL) {
         fprintf(stderr, "Cant open input file\n");
@@ -31,18 +165,67 @@ int main(int argc, const char * argv[]) {
     }
     
     char line[256];
+    int previousLineCount = -1;
     while (fgets(line, sizeof(line), inputFile)) {
-        if ((line[0] == '/' && line[1] == '/') || isspace(line[0])) {
+        char *newLine = trimLeadingWhitespaceFromString(line);
+        
+        if (shouldIgnoreLine(newLine) == 1) {
             continue;
         }
         
-        if (line[0] == '@') {
-            int value = atoi(strtok(line, "@"));
+        if (newLine[0] == '(') {
+            char *beginning = strstr(newLine, "(");
+            char *end = strstr(newLine, ")");
+            
+            size_t labelSize = end - beginning; //beginning - end
+            char *label = malloc(labelSize * sizeof(char));
+            
+            strncpy(label, beginning + 1, labelSize - 1);
+            label[labelSize - 1] = '\0';
+            
+            addSymbol(label, previousLineCount + 1);
+            free(label); //TODO: should this be here?
+            
+            continue;
+        } else {
+            previousLineCount += 1;
+        }
+    }
+    
+    rewind(inputFile);
+    
+    while (fgets(line, sizeof(line), inputFile)) {
+        char *newLine = trimLeadingWhitespaceFromString(line);
+        
+        if (shouldIgnoreLine(newLine) == 1 || line[0] == '(') {
+            continue;
+        }
+        
+        if (newLine[0] == '@') {
             fprintf(outputFile, "0");
+            int address = -1;
+            char *value = strtok(newLine, "@");
+            
+            if (isdigit(value[0])) {
+                address = atoi(value);
+            } else {
+                value = strtok(value, "\r");
+                addressForSymbolKey(value, &address);
+                if (address == -1) {
+                    address = variableAddress;
+                    addSymbol(value, address);
+                    variableAddress += 1;
+                }
+            }
+            
+            if (address == -1) {
+                printf("No address for key: %s", value);
+                return 1;
+            }
             
             int i, bit;
             for (i = 14; i >= 0; i--) {
-                bit = value >> i;
+                bit = address >> i;
                 
                 if (bit & 1) {
                     fprintf(outputFile, "1");
@@ -59,15 +242,15 @@ int main(int argc, const char * argv[]) {
         char *component = NULL;
         char *jump = NULL;
         
-        if (strchr(line, '=')) {
-            destination = strtok(line, "=");
+        if (strchr(newLine, '=')) {
+            destination = strtok(newLine, "=");
             component = strtok(strtok(NULL, "="), ";");
             jump = strtok(NULL, ";");
-        } else if (strchr(line, ';')) {
-            component = strtok(line, ";");
+        } else if (strchr(newLine, ';')) {
+            component = strtok(newLine, ";");
             jump = strtok(NULL, ";");
         } else {
-            component = line;
+            component = newLine;
         }
         
         if (destination == NULL) {
