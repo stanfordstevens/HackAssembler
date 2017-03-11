@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h>
 
 typedef struct node {
     char *key;
@@ -159,6 +160,8 @@ int main(int argc, const char * argv[]) {
         fprintf(stderr, "Cant open ouput file\n");
         return 1;
     }
+    
+    clock_t begin = clock();
     
     char line[256];
     int previous_line_count = -1;
@@ -351,5 +354,8 @@ int main(int argc, const char * argv[]) {
     
     fclose(output_file);
     
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("time spent: %f", time_spent);
     return 0;
 }
