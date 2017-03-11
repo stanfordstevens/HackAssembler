@@ -12,6 +12,7 @@
 #include <ctype.h>
 
 size_t number_of_symbols = 0;
+size_t length_of_symbols = 0;
 char **symbol_keys;
 int *symbol_addresses;
 
@@ -74,11 +75,15 @@ int hash(char *key) {
 void add_symbol(char *key, int address) {
     number_of_symbols++;
     
-    symbol_keys = realloc(symbol_keys, number_of_symbols * sizeof(char *));
-    symbol_addresses = realloc(symbol_addresses, number_of_symbols * sizeof(int));
+    if (number_of_symbols > length_of_symbols) {
+        length_of_symbols = length_of_symbols * 2;
+        symbol_keys = realloc(symbol_keys, length_of_symbols * sizeof(char *));
+        symbol_addresses = realloc(symbol_addresses, length_of_symbols * sizeof(int));
+    }
     
     size_t new_index = number_of_symbols - 1;
-    symbol_keys[new_index] = malloc(240 * sizeof(char));
+    size_t key_length = strlen(key) + 1;
+    symbol_keys[new_index] = malloc(key_length * sizeof(char)); //TODO: is this right?
     strcpy(symbol_keys[new_index], key);
     symbol_addresses[new_index] = address;
 }
@@ -114,13 +119,10 @@ int main(int argc, const char * argv[]) {
 //    node *symbols[26] = {NULL};
     
     int variable_address = 16;
-    int initial_symbol_count = 23;
+    size_t initial_symbol_count = 23;
     symbol_keys = malloc(initial_symbol_count*sizeof(char *));
-    for (int i = 0; i < initial_symbol_count; i++) {
-        symbol_keys[i] = malloc(240 * sizeof(char)); //TODO: i know what the initial symbols are, so i could change this
-    }
-    
     symbol_addresses = malloc(initial_symbol_count*sizeof(int));
+    length_of_symbols = initial_symbol_count;
     
     add_symbol("SP", 0);
     add_symbol("LCL", 1);
@@ -184,7 +186,7 @@ int main(int argc, const char * argv[]) {
             label[label_size - 1] = '\0';
             
             add_symbol(label, previous_line_count + 1);
-            free(label); //TODO: should this be here?
+            free(label);
             
             continue;
         } else {
