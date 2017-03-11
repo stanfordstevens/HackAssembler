@@ -11,9 +11,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-size_t numberOfSymbols = 0;
-char **symbolKeys;
-int *symbolAddresses;
+size_t number_of_symbols = 0;
+char **symbol_keys;
+int *symbol_addresses;
 
 typedef struct node {
     char *key;
@@ -71,22 +71,22 @@ int hash(char *key) {
 //    }
 //}
 
-void addSymbol(char *key, int address) {
-    numberOfSymbols++;
+void add_symbol(char *key, int address) {
+    number_of_symbols++;
     
-    symbolKeys = realloc(symbolKeys, numberOfSymbols * sizeof(char *));
-    symbolAddresses = realloc(symbolAddresses, numberOfSymbols * sizeof(int));
+    symbol_keys = realloc(symbol_keys, number_of_symbols * sizeof(char *));
+    symbol_addresses = realloc(symbol_addresses, number_of_symbols * sizeof(int));
     
-    size_t newIndex = numberOfSymbols - 1;
-    symbolKeys[newIndex] = malloc(240 * sizeof(char));
-    strcpy(symbolKeys[newIndex], key);
-    symbolAddresses[newIndex] = address;
+    size_t new_index = number_of_symbols - 1;
+    symbol_keys[new_index] = malloc(240 * sizeof(char));
+    strcpy(symbol_keys[new_index], key);
+    symbol_addresses[new_index] = address;
 }
 
-void addressForSymbolKey(char *key, int *address) {
-    for (int i = 0; i < numberOfSymbols; i++) {
-        if (strcmp(symbolKeys[i], key) == 0) {
-            *address = symbolAddresses[i];
+void address_for_symbol_key(char *key, int *address) {
+    for (int i = 0; i < number_of_symbols; i++) {
+        if (strcmp(symbol_keys[i], key) == 0) {
+            *address = symbol_addresses[i];
             return;
         }
     }
@@ -94,7 +94,7 @@ void addressForSymbolKey(char *key, int *address) {
     return;
 }
 
-int shouldIgnoreLine(char *line) {
+int should_ignore_line(char *line) {
     if ((line[0] == '/' && line[1] == '/') || isspace(line[0]) || strcmp(line, "") == 0 || strcmp(line, "\r\n") == 0) { //TODO: this is awful
         return 1;
     }
@@ -102,7 +102,7 @@ int shouldIgnoreLine(char *line) {
     return 0;
 }
 
-char* trimLeadingWhitespaceFromString(char *string) {
+char* trim_leading_whitespace(char *string) {
     while(isspace((unsigned char)*string)) {
         string++;
     }
@@ -113,108 +113,108 @@ char* trimLeadingWhitespaceFromString(char *string) {
 int main(int argc, const char * argv[]) {
 //    node *symbols[26] = {NULL};
     
-    int variableAddress = 16;
-    int initialSymbolAmount = 23;
-    symbolKeys = malloc(initialSymbolAmount*sizeof(char *));
-    for (int i = 0; i < initialSymbolAmount; i++) {
-        symbolKeys[i] = malloc(240 * sizeof(char)); //TODO: dont know how big each string is
+    int variable_address = 16;
+    int initial_symbol_count = 23;
+    symbol_keys = malloc(initial_symbol_count*sizeof(char *));
+    for (int i = 0; i < initial_symbol_count; i++) {
+        symbol_keys[i] = malloc(240 * sizeof(char)); //TODO: i know what the initial symbols are, so i could change this
     }
     
-    symbolAddresses = malloc(initialSymbolAmount*sizeof(int));
+    symbol_addresses = malloc(initial_symbol_count*sizeof(int));
     
-    addSymbol("SP", 0);
-    addSymbol("LCL", 1);
-    addSymbol("ARG", 2);
-    addSymbol("THIS", 3);
-    addSymbol("THAT", 4);
-    addSymbol("R0", 0);
-    addSymbol("R1", 1);
-    addSymbol("R2", 2);
-    addSymbol("R3", 3);
-    addSymbol("R4", 4);
-    addSymbol("R5", 5);
-    addSymbol("R6", 6);
-    addSymbol("R7", 7);
-    addSymbol("R8", 8);
-    addSymbol("R9", 9);
-    addSymbol("R10", 10);
-    addSymbol("R11", 11);
-    addSymbol("R12", 12);
-    addSymbol("R13", 13);
-    addSymbol("R14", 14);
-    addSymbol("R15", 15);
-    addSymbol("SCREEN", 16384);
-    addSymbol("KBD", 24576);
+    add_symbol("SP", 0);
+    add_symbol("LCL", 1);
+    add_symbol("ARG", 2);
+    add_symbol("THIS", 3);
+    add_symbol("THAT", 4);
+    add_symbol("R0", 0);
+    add_symbol("R1", 1);
+    add_symbol("R2", 2);
+    add_symbol("R3", 3);
+    add_symbol("R4", 4);
+    add_symbol("R5", 5);
+    add_symbol("R6", 6);
+    add_symbol("R7", 7);
+    add_symbol("R8", 8);
+    add_symbol("R9", 9);
+    add_symbol("R10", 10);
+    add_symbol("R11", 11);
+    add_symbol("R12", 12);
+    add_symbol("R13", 13);
+    add_symbol("R14", 14);
+    add_symbol("R15", 15);
+    add_symbol("SCREEN", 16384);
+    add_symbol("KBD", 24576);
     
     char filepath[200];
     printf("Enter filepath> ");
     scanf("%s", filepath);
     
-    FILE *inputFile = fopen(filepath, "r");
+    FILE *input_file = fopen(filepath, "r");
     
-    if (inputFile == NULL) {
+    if (input_file == NULL) {
         fprintf(stderr, "Cant open input file\n");
         return 1;
     }
     
-    FILE *outputFile = fopen("/Users/FireCrotch/Desktop/ouput.hack", "w");
+    FILE *output_file = fopen("/Users/FireCrotch/Desktop/ouput.hack", "w");
     
-    if (outputFile == NULL) {
+    if (output_file == NULL) {
         fprintf(stderr, "Cant open ouput file\n");
         return 1;
     }
     
     char line[256];
-    int previousLineCount = -1;
-    while (fgets(line, sizeof(line), inputFile)) {
-        char *newLine = trimLeadingWhitespaceFromString(line);
+    int previous_line_count = -1;
+    while (fgets(line, sizeof(line), input_file)) {
+        char *new_line = trim_leading_whitespace(line);
         
-        if (shouldIgnoreLine(newLine) == 1) {
+        if (should_ignore_line(new_line) == 1) {
             continue;
         }
         
-        if (newLine[0] == '(') {
-            char *beginning = strstr(newLine, "(");
-            char *end = strstr(newLine, ")");
+        if (new_line[0] == '(') {
+            char *beginning = strstr(new_line, "(");
+            char *end = strstr(new_line, ")");
             
-            size_t labelSize = end - beginning; //beginning - end
-            char *label = malloc(labelSize * sizeof(char));
+            size_t label_size = end - beginning;
+            char *label = malloc(label_size * sizeof(char));
             
-            strncpy(label, beginning + 1, labelSize - 1);
-            label[labelSize - 1] = '\0';
+            strncpy(label, beginning + 1, label_size - 1);
+            label[label_size - 1] = '\0';
             
-            addSymbol(label, previousLineCount + 1);
+            add_symbol(label, previous_line_count + 1);
             free(label); //TODO: should this be here?
             
             continue;
         } else {
-            previousLineCount += 1;
+            previous_line_count += 1;
         }
     }
     
-    rewind(inputFile);
+    rewind(input_file);
     
-    while (fgets(line, sizeof(line), inputFile)) {
-        char *newLine = trimLeadingWhitespaceFromString(line);
+    while (fgets(line, sizeof(line), input_file)) {
+        char *new_line = trim_leading_whitespace(line);
         
-        if (shouldIgnoreLine(newLine) == 1 || line[0] == '(') {
+        if (should_ignore_line(new_line) == 1 || line[0] == '(') {
             continue;
         }
         
-        if (newLine[0] == '@') {
-            fprintf(outputFile, "0");
+        if (new_line[0] == '@') {
+            fprintf(output_file, "0");
             int address = -1;
-            char *value = strtok(newLine, "@");
+            char *value = strtok(new_line, "@");
             
             if (isdigit(value[0])) {
                 address = atoi(value);
             } else {
                 value = strtok(value, "\r");
-                addressForSymbolKey(value, &address);
+                address_for_symbol_key(value, &address);
                 if (address == -1) {
-                    address = variableAddress;
-                    addSymbol(value, address);
-                    variableAddress += 1;
+                    address = variable_address;
+                    add_symbol(value, address);
+                    variable_address += 1;
                 }
             }
             
@@ -228,13 +228,13 @@ int main(int argc, const char * argv[]) {
                 bit = address >> i;
                 
                 if (bit & 1) {
-                    fprintf(outputFile, "1");
+                    fprintf(output_file, "1");
                 } else {
-                    fprintf(outputFile, "0");
+                    fprintf(output_file, "0");
                 }
             }
             
-            fprintf(outputFile, "\n");
+            fprintf(output_file, "\n");
             continue;
         }
         
@@ -242,15 +242,15 @@ int main(int argc, const char * argv[]) {
         char *component = NULL;
         char *jump = NULL;
         
-        if (strchr(newLine, '=')) {
-            destination = strtok(newLine, "=");
+        if (strchr(new_line, '=')) {
+            destination = strtok(new_line, "=");
             component = strtok(strtok(NULL, "="), ";");
             jump = strtok(NULL, ";");
-        } else if (strchr(newLine, ';')) {
-            component = strtok(newLine, ";");
+        } else if (strchr(new_line, ';')) {
+            component = strtok(new_line, ";");
             jump = strtok(NULL, ";");
         } else {
-            component = newLine;
+            component = new_line;
         }
         
         if (destination == NULL) {
@@ -350,10 +350,10 @@ int main(int argc, const char * argv[]) {
             jump = "111";
         }
         
-        fprintf(outputFile, "111%s%s%s\n", component, destination, jump);
+        fprintf(output_file, "111%s%s%s\n", component, destination, jump);
     }
     
-    fclose(outputFile);
+    fclose(output_file);
     
     return 0;
 }
