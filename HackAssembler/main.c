@@ -208,7 +208,7 @@ int main(int argc, const char * argv[]) {
         }
         
         if (new_line[0] == '@') {
-            fprintf(output_file, "0");
+            fputc('0', output_file);
             int address = -1;
             char *value = strtok(new_line, "@");
             
@@ -234,13 +234,13 @@ int main(int argc, const char * argv[]) {
                 bit = address >> i;
                 
                 if (bit & 1) {
-                    fprintf(output_file, "1");
+                    fputc('1', output_file);
                 } else {
-                    fprintf(output_file, "0");
+                    fputc('0', output_file);
                 }
             }
             
-            fprintf(output_file, "\n");
+            fputc('\n', output_file);
             continue;
         }
         
