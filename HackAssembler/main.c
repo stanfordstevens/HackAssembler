@@ -11,11 +11,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-size_t number_of_symbols = 0;
-size_t length_of_symbols = 0;
-char **symbol_keys;
-int *symbol_addresses;
-
 typedef struct node {
     char *key;
     int value;
@@ -26,78 +21,83 @@ int hash(char *key) {
     return toupper(key[0]) - 'A';
 }
 
+node *symbols[26] = {NULL};
 
-//void addSymbol(node *symbols[26], char *key, int value) {
-//    int hashedKey = hash(key);
-//    
-//    node *newPointer = malloc(sizeof(node));
-//    if (newPointer == NULL) {
-//        return;
-//    }
-//    
-//    strcpy(newPointer->key, key);
-//    newPointer->value = value;
-//    newPointer->next = NULL;
-//    
-//    if (symbols[hashedKey] == NULL) {
-//        symbols[hashedKey] = newPointer;
-//    } else {
-//        node *previousPointer = symbols[hashedKey];
-//        while (1) {
-//            if (previousPointer->next == NULL) {
-//                previousPointer->next = newPointer;
-//                break;
-//            }
-//            
-//            previousPointer = previousPointer->next;
-//        }
-//    }
-//}
-//
-//void getAddressFromSymbols(node *symbols[26], char *key, int *address) {
-//    int hashedKey = hash(key);
-//    
-//    if (symbols[hashedKey] == NULL) {
-//        return;
-//    } else {
-//        while (1) {
-//            node *previousPointer = symbols[hashedKey];
-//            if (strcmp(previousPointer->key, key) == 0) {
-//                *address = previousPointer->value;
-//                break;
-//            } else if (previousPointer->next == NULL) {
-//                break;
-//            }
-//        }
-//    }
-//}
-
-void add_symbol(char *key, int address) {
-    number_of_symbols++;
+void add_symbol(char *key, int value) {
+    int hashedKey = hash(key);
     
-    if (number_of_symbols > length_of_symbols) {
-        length_of_symbols = length_of_symbols * 2;
-        symbol_keys = realloc(symbol_keys, length_of_symbols * sizeof(char *));
-        symbol_addresses = realloc(symbol_addresses, length_of_symbols * sizeof(int));
+    node *newPointer = malloc(sizeof(node));
+    if (newPointer == NULL) {
+        return;
     }
     
-    size_t new_index = number_of_symbols - 1;
-    size_t key_length = strlen(key) + 1;
-    symbol_keys[new_index] = malloc(key_length * sizeof(char)); //TODO: is this right?
-    strcpy(symbol_keys[new_index], key);
-    symbol_addresses[new_index] = address;
+    newPointer->key = malloc((strlen(key) + 1) * sizeof(char));
+    strcpy(newPointer->key, key);
+    
+    newPointer->value = value;
+    newPointer->next = NULL;
+    
+    if (symbols[hashedKey] == NULL) {
+        symbols[hashedKey] = newPointer;
+    } else {
+        node *previousPointer = symbols[hashedKey];
+        while (1) {
+            if (previousPointer->next == NULL) {
+                previousPointer->next = newPointer;
+                break;
+            }
+            
+            previousPointer = previousPointer->next;
+        }
+    }
 }
 
 void address_for_symbol_key(char *key, int *address) {
-    for (int i = 0; i < number_of_symbols; i++) {
-        if (strcmp(symbol_keys[i], key) == 0) {
-            *address = symbol_addresses[i];
-            return;
+    int hashedKey = hash(key);
+    
+    if (symbols[hashedKey] == NULL) {
+        return;
+    } else {
+        node *previousPointer = symbols[hashedKey];
+        while (1) {
+            if (strcmp(previousPointer->key, key) == 0) {
+                *address = previousPointer->value;
+                break;
+            } else if (previousPointer->next == NULL) {
+                break;
+            } else {
+                previousPointer = previousPointer->next;
+            }
         }
     }
-    
-    return;
 }
+
+//void add_symbol(char *key, int address) {
+//    number_of_symbols++;
+//    
+//    if (number_of_symbols > length_of_symbols) {
+//        length_of_symbols = length_of_symbols * 2;
+//        symbol_keys = realloc(symbol_keys, length_of_symbols * sizeof(char *));
+//        symbol_addresses = realloc(symbol_addresses, length_of_symbols * sizeof(int));
+//    }
+//    
+//    size_t new_index = number_of_symbols - 1;
+//    size_t key_length = strlen(key) + 1;
+//    symbol_keys[new_index] = malloc(key_length * sizeof(char));
+//    strcpy(symbol_keys[new_index], key);
+//    symbol_addresses[new_index] = address;
+//}
+//
+//void address_for_symbol_key(char *key, int *address) {
+//    for (int i = 0; i < number_of_symbols; i++) {
+//        if (strcmp(symbol_keys[i], key) == 0) {
+//            *address = symbol_addresses[i];
+//            return;
+//        }
+//    }
+//    
+//    return;
+//}
 
 int should_ignore_line(char *line) {
     if ((line[0] == '/' && line[1] == '/') || isspace(line[0]) || strcmp(line, "") == 0 || strcmp(line, "\r\n") == 0) { //TODO: this is awful
@@ -116,13 +116,7 @@ char* trim_leading_whitespace(char *string) {
 }
 
 int main(int argc, const char * argv[]) {
-//    node *symbols[26] = {NULL};
-    
     int variable_address = 16;
-    size_t initial_symbol_count = 23;
-    symbol_keys = malloc(initial_symbol_count*sizeof(char *));
-    symbol_addresses = malloc(initial_symbol_count*sizeof(int));
-    length_of_symbols = initial_symbol_count;
     
     add_symbol("SP", 0);
     add_symbol("LCL", 1);
