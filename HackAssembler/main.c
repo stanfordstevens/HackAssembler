@@ -61,8 +61,6 @@ char* trim_leading_whitespace(char *string) {
 }
 
 int main(int argc, const char * argv[]) {
-//    node *symbols[26] = {NULL};
-    
     int variable_address = 16;
     size_t initial_symbol_count = 23;
     symbol_keys = malloc(initial_symbol_count*sizeof(char *));
