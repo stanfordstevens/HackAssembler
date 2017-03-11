@@ -356,6 +356,6 @@ int main(int argc, const char * argv[]) {
     
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("time spent: %f", time_spent);
+    printf("time spent: %f\n", time_spent);
     return 0;
 }
