@@ -73,33 +73,6 @@ void address_for_symbol_key(char *key, int *address) {
     }
 }
 
-//void add_symbol(char *key, int address) {
-//    number_of_symbols++;
-//    
-//    if (number_of_symbols > length_of_symbols) {
-//        length_of_symbols = length_of_symbols * 2;
-//        symbol_keys = realloc(symbol_keys, length_of_symbols * sizeof(char *));
-//        symbol_addresses = realloc(symbol_addresses, length_of_symbols * sizeof(int));
-//    }
-//    
-//    size_t new_index = number_of_symbols - 1;
-//    size_t key_length = strlen(key) + 1;
-//    symbol_keys[new_index] = malloc(key_length * sizeof(char));
-//    strcpy(symbol_keys[new_index], key);
-//    symbol_addresses[new_index] = address;
-//}
-//
-//void address_for_symbol_key(char *key, int *address) {
-//    for (int i = 0; i < number_of_symbols; i++) {
-//        if (strcmp(symbol_keys[i], key) == 0) {
-//            *address = symbol_addresses[i];
-//            return;
-//        }
-//    }
-//    
-//    return;
-//}
-
 int should_ignore_line(char *line) {
     if ((line[0] == '/' && line[1] == '/') || isspace(line[0]) || strcmp(line, "") == 0 || strcmp(line, "\r\n") == 0) { //TODO: this is awful
         return 1;
