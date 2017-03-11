@@ -12,67 +12,10 @@
 #include <ctype.h>
 #include <time.h>
 
-
 size_t number_of_symbols = 0;
 size_t length_of_symbols = 0;
 char **symbol_keys;
 int *symbol_addresses;
-
-typedef struct node {
-    char *key;
-    int value;
-    struct node *next;
-} node;
-
-int hash(char *key) {
-    return toupper(key[0]) - 'A';
-}
-
-
-//void addSymbol(node *symbols[26], char *key, int value) {
-//    int hashedKey = hash(key);
-//    
-//    node *newPointer = malloc(sizeof(node));
-//    if (newPointer == NULL) {
-//        return;
-//    }
-//    
-//    strcpy(newPointer->key, key);
-//    newPointer->value = value;
-//    newPointer->next = NULL;
-//    
-//    if (symbols[hashedKey] == NULL) {
-//        symbols[hashedKey] = newPointer;
-//    } else {
-//        node *previousPointer = symbols[hashedKey];
-//        while (1) {
-//            if (previousPointer->next == NULL) {
-//                previousPointer->next = newPointer;
-//                break;
-//            }
-//            
-//            previousPointer = previousPointer->next;
-//        }
-//    }
-//}
-//
-//void getAddressFromSymbols(node *symbols[26], char *key, int *address) {
-//    int hashedKey = hash(key);
-//    
-//    if (symbols[hashedKey] == NULL) {
-//        return;
-//    } else {
-//        while (1) {
-//            node *previousPointer = symbols[hashedKey];
-//            if (strcmp(previousPointer->key, key) == 0) {
-//                *address = previousPointer->value;
-//                break;
-//            } else if (previousPointer->next == NULL) {
-//                break;
-//            }
-//        }
-//    }
-//}
 
 void add_symbol(char *key, int address) {
     number_of_symbols++;
